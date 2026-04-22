@@ -1,11 +1,7 @@
+import ListPage from "./pages/ListPage";
+
 function App() {
-  return (
-    <div className="p-10">
-      <h1 className="text-3xl font-bold text-blue-600">
-        Frontend Ready
-      </h1>
-    </div>
-  );
+  return <ListPage />;
 }
 
 export default App;
