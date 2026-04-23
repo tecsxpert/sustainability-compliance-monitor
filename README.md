@@ -21,3 +21,11 @@ A tool-based AI solution to monitor and ensure sustainability compliance.
 * Implemented `flask-limiter` for rate limiting (30 requests/minute).
 * Added security features to strip HTML and block prompt injection.
 * Configured specialized system prompts for sustainability compliance expertise.
+### ?? Day 4
+* Developed AiServiceClient.java using Spring RestTemplate.
+* Configured a 10-second timeout for robust service communication.
+* Implemented fail-safe error handling (returns null on failure).
+* Created a Maven project structure for the Java client.
+
+* Added AiServiceClientStandard.java for instant running without Maven dependencies.
+* Provided run_standard_client.bat to bypass 'command not found' errors by using the built-in Java path.
