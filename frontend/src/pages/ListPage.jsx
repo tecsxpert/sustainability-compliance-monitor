@@ -4,38 +4,57 @@ import API from "../services/api";
 function ListPage() {
   const [data, setData] = useState([]);
   const [status, setStatus] = useState("");
+  const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+  const fetchData = async () => {
     setLoading(true);
 
-    const url = status ? `/api/status/${status}` : "/api/all";
+    try {
+      const url = query
+        ? `/api/search?q=${query}`
+        : status
+        ? `/api/status/${status}`
+        : "/api/all";
 
-    API.get(url)
-      .then((res) => setData(res.data))
-      .catch((err) => console.error(err))
-      .finally(() => setLoading(false));
-  }, [status]);
+      const res = await API.get(url);
+      setData(res.data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  fetchData();
+}, [status, query]);
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Compliance Records</h1>
 
-      {/* Filter */}
+      {/* SEARCH */}
+      <input
+        placeholder="Search..."
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        className="border p-2 mb-4"
+      />
+
+      {/* FILTER */}
       <select
-        className="mb-4 border p-2"
         onChange={(e) => setStatus(e.target.value)}
+        className="mb-4 border p-2"
       >
         <option value="">All</option>
         <option value="COMPLIANT">Compliant</option>
         <option value="NON-COMPLIANT">Non-Compliant</option>
       </select>
 
-      {/* States */}
       {loading ? (
         <p>Loading...</p>
       ) : data.length === 0 ? (
-        <p className="text-gray-500">No records found</p>
+        <p>No records found</p>
       ) : (
         <table className="table-auto border w-full">
           <thead>

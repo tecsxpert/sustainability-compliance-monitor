@@ -9,4 +9,5 @@ public interface ComplianceRepository extends JpaRepository<ComplianceRecord, Lo
 
     List<ComplianceRecord> findByStatus(String status);
 
+    List<ComplianceRecord> findByCompanyNameContainingIgnoreCase(String q);
 }

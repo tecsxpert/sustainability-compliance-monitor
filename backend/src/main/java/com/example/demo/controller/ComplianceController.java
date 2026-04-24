@@ -1,31 +1,58 @@
 package com.example.demo.controller;
 
+import com.example.demo.entity.ComplianceRecord;
+import com.example.demo.repository.ComplianceRepository;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
-import java.util.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
 @CrossOrigin
 public class ComplianceController {
 
+    private final ComplianceRepository repo;
+
+    public ComplianceController(ComplianceRepository repo) {
+        this.repo = repo;
+    }
+
     @GetMapping("/all")
-    public List<Map<String, Object>> getAll() {
+    public List<ComplianceRecord> getAll() {
+        return repo.findAll();
+    }
 
-        List<Map<String, Object>> data = new ArrayList<>();
+    @GetMapping("/status/{status}")
+    public List<ComplianceRecord> getByStatus(@PathVariable String status) {
+        return repo.findByStatus(status);
+    }
 
-        Map<String, Object> item1 = new HashMap<>();
-        item1.put("id", 1);
-        item1.put("company_name", "ABC Corp");
-        item1.put("status", "COMPLIANT");
+    @PostMapping("/create")
+    public ComplianceRecord create(@Valid @RequestBody ComplianceRecord record) {
+        return repo.save(record);
+    }
 
-        Map<String, Object> item2 = new HashMap<>();
-        item2.put("id", 2);
-        item2.put("company_name", "XYZ Ltd");
-        item2.put("status", "NON-COMPLIANT");
+    @PutMapping("/{id}")
+    public ComplianceRecord update(@PathVariable Long id,
+                                   @Valid @RequestBody ComplianceRecord updated) {
+        ComplianceRecord record = repo.findById(id).orElseThrow();
 
-        data.add(item1);
-        data.add(item2);
+        record.setCompanyName(updated.getCompanyName());
+        record.setComplianceScore(updated.getComplianceScore());
+        record.setStatus(updated.getStatus());
+        record.setDescription(updated.getDescription());
 
-        return data;
+        return repo.save(record);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        repo.deleteById(id);
+    }
+
+    @GetMapping("/search")
+    public List<ComplianceRecord> search(@RequestParam String q) {
+        return repo.findByCompanyNameContainingIgnoreCase(q);
     }
 }
