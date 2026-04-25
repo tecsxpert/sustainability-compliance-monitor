@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from services.groq_client import generate_response
+from services.groq_client import call_groq   # ✅ FIXED
 from datetime import datetime
 import json
 import os
@@ -21,7 +21,7 @@ def describe():
         if input_text == "":
             return jsonify({"error": "input_text cannot be empty"}), 400
 
-        # STEP 2: LOAD PROMPT (ROBUST PATH)
+        # STEP 2: LOAD PROMPT
         try:
             BASE_DIR = os.path.dirname(os.path.abspath(__file__))
             prompt_path = os.path.join(BASE_DIR, "..", "prompts", "describe_prompt.txt")
@@ -33,14 +33,14 @@ def describe():
             print("Prompt Load Error:", str(e))
             return jsonify({"error": "Prompt file not found"}), 500
 
-        # STEP 3: INJECT INPUT INTO PROMPT
+        # STEP 3: INJECT INPUT
         final_prompt = prompt_template.replace("{input_text}", input_text)
 
         # STEP 4: CALL GROQ
-        response = generate_response(final_prompt)
+        response = call_groq(final_prompt)   # ✅ FIXED
         print("Groq response:", response)
 
-        # STEP 5: FALLBACK HANDLING
+        # STEP 5: FALLBACK
         if response is None:
             return jsonify({
                 "input": input_text,
@@ -49,13 +49,13 @@ def describe():
                 "is_fallback": True
             }), 200
 
-        # STEP 6: PARSE JSON RESPONSE
+        # STEP 6: PARSE JSON
         try:
             parsed_response = json.loads(response)
         except Exception:
             parsed_response = {"raw_output": response}
 
-        # STEP 7: SUCCESS RESPONSE
+        # STEP 7: SUCCESS
         return jsonify({
             "input": input_text,
             "description": parsed_response,
