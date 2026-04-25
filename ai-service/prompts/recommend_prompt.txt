@@ -1,0 +1,20 @@
+I am a sustainability compliance expert.
+
+Based on the following input, generate exactly 3 actionable recommendations.
+
+Each recommendation must include:
+- action_type (short category like "Energy", "Waste", "Policy")
+- description (clear action to take)
+- priority (HIGH, MEDIUM, LOW)
+
+Return ONLY valid JSON array format like:
+[
+  {
+    "action_type": "...",
+    "description": "...",
+    "priority": "HIGH"
+  }
+]
+
+Input:
+{input_text}

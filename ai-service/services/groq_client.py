@@ -1,27 +1,27 @@
-from groq import Groq
 from dotenv import load_dotenv
-import os
-
-# Load environment variables
 load_dotenv()
 
-# Initialize client
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+import os
+from groq import Groq
 
+api_key = os.getenv("GROQ_API_KEY")
 
-def generate_response(prompt):
+if not api_key:
+    raise ValueError("GROQ_API_KEY is not set. Check your .env file")
+
+client = Groq(api_key=api_key)
+
+def call_groq(prompt):
     try:
-        print("Calling Groq API...")
-
         response = client.chat.completions.create(
-            model="llama-3.1-8b-instant", 
+            model="llama-3.3-70b-versatile",
             messages=[{"role": "user", "content": prompt}],
-            temperature=0.3
+            temperature=0.5,
+            max_tokens=500
         )
 
-        print("Groq SUCCESS")
         return response.choices[0].message.content
 
     except Exception as e:
-        print("GROQ ERROR:", str(e))
-        return None
+        print(f"[ERROR] Groq API failed: {e}")
+        raise
