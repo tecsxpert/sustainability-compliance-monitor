@@ -38,9 +38,12 @@ def sanitize_input(text):
     injection_patterns = [
         r"ignore (all )?previous instructions",
         r"system prompt",
-        r"instead of (.*) do (.*)",
-        r"you are now (.*)",
-        r"forget what we talked about"
+        r"instead of",
+        r"you are now",
+        r"forget (your|what|all)",
+        r"no longer an AI",
+        r"act as",
+        r"sudo mode"
     ]
     
     for pattern in injection_patterns:
@@ -73,18 +76,27 @@ def analyze_compliance():
         system_prompt = "You are a Sustainability Compliance Expert. Analyze the following query for ESG (Environmental, Social, and Governance) compliance."
         ai_response = client.get_completion(clean_query, system_prompt=system_prompt)
         
+        # Security: Escape AI response to prevent XSS if rendered in a browser
+        # (Basic escaping for demonstration)
+        escaped_response = re.sub(r'[<>]', '', ai_response)
+        
         return jsonify({
             "status": "success",
             "data": {
                 "original_query": user_query,
                 "sanitized_query": clean_query,
-                "analysis": ai_response
+                "analysis": escaped_response
             }
         })
 
     except Exception as e:
         logger.error(f"Error in analyze_compliance: {e}")
         return jsonify({"error": "Internal server error"}), 500
+
+@app.route('/health', methods=['GET'])
+def health_check():
+    """Security Test: Basic health check endpoint"""
+    return jsonify({"status": "healthy", "version": "1.0.0"}), 200
 
 @app.errorhandler(429)
 def ratelimit_handler(e):
