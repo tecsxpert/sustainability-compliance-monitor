@@ -1,3 +1,4 @@
+import os
 import re
 import logging
 from flask import Flask, request, jsonify
@@ -72,8 +73,11 @@ def analyze_compliance():
         if not clean_query:
             return jsonify({"error": "Invalid or empty query after sanitization"}), 400
 
-        # AI Analysis
-        system_prompt = "You are a Sustainability Compliance Expert. Analyze the following query for ESG (Environmental, Social, and Governance) compliance."
+        # Day 6: Prompt Tuning - Load prompt from file
+        prompt_path = os.path.join(os.path.dirname(__file__), 'prompts', 'sustainability_expert.txt')
+        with open(prompt_path, 'r') as f:
+            system_prompt = f.read().strip()
+            
         ai_response = client.get_completion(clean_query, system_prompt=system_prompt)
         
         # Security: Escape AI response to prevent XSS if rendered in a browser

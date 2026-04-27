@@ -21,11 +21,22 @@ A tool-based AI solution to monitor and ensure sustainability compliance.
 * Implemented `flask-limiter` for rate limiting (30 requests/minute).
 * Added security features to strip HTML and block prompt injection.
 * Configured specialized system prompts for sustainability compliance expertise.
-### ?? Day 4
+### 📅 Day 4
 * Developed AiServiceClient.java using Spring RestTemplate.
 * Configured a 10-second timeout for robust service communication.
 * Implemented fail-safe error handling (returns null on failure).
 * Created a Maven project structure for the Java client.
-
 * Added AiServiceClientStandard.java for instant running without Maven dependencies.
-* Provided run_standard_client.bat to bypass 'command not found' errors by using the built-in Java path.
+* Provided run_standard_client.bat for easy execution.
+
+### 📅 Day 5
+* Conducted security testing and verification of AI response integrity.
+* Documented API security measures and rate limiting configurations.
+* Refined input sanitization to include prompt injection detection.
+
+### 📅 Day 6
+* Implemented **Prompt Tuning** for enhanced ESG compliance analysis.
+* Externalized system prompts to `ai-service/prompts/` for better maintainability.
+* Refined the "Sustainability Expert" persona with structured analysis (Pillars, Regulations, Risks).
+* Created `tune_prompts.py` to automate accuracy scoring across 10 real-world inputs.
+* Validated results, achieving high-accuracy structured responses.
