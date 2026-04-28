@@ -67,7 +67,7 @@ def sanitize_input(text):
 @limiter.limit("10 per minute")  # Stricter limit for the AI processing route
 def analyze_compliance():
     try:
-        data = request.get_json()
+        data = request.get_json(silent=True)
         if not data or 'query' not in data:
             return jsonify({"error": "Missing 'query' in request body"}), 400
 
