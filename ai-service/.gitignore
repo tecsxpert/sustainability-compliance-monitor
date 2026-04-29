@@ -1,0 +1,5 @@
+.env
+ai-service/.env
+venv/
+__pycache__/
+*.pyc
