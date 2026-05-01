@@ -1,42 +1,30 @@
 from flask import Blueprint, request, jsonify
+import time
 from services.groq_client import call_groq
-from services.cache import generate_key, get_cached_response, set_cached_response
+from services.fallback import fallback_describe
+from config import DESCRIBE_PROMPT
 
-# DEFINE blueprint BEFORE using it
 describe_bp = Blueprint('describe', __name__)
 
-@describe_bp.route('/describe', methods=['POST'])
+@describe_bp.route("/describe", methods=["POST"])
 def describe():
+    start_time = time.time()
+
     data = request.json
-    input_text = data.get("input_text")
 
-    if not input_text:
-        return jsonify({"error": "input_text required"}), 400
+    if not data or "text" not in data:
+        return jsonify({"error": "Invalid input"}), 400
 
-    key = generate_key(input_text)
+    messages = [
+        {"role": "system", "content": DESCRIBE_PROMPT},
+        {"role": "user", "content": data["text"]}
+    ]
 
-    # Check cache
-    cached = get_cached_response(key)
-    if cached:
-        cached["cached"] = True
-        return jsonify(cached)
+    #  CALL YOUR FUNCTION HERE
+    result = call_groq(messages, fallback_describe)
 
-    # Call AI
-    result = call_groq(input_text)
-
-    # If AI failed → DO NOT cache
-    if isinstance(result, dict) and result.get("is_fallback"):
-        return jsonify({
-            "description": result,
-            "cached": False
-        })
-
-    response = {
-        "description": result,
-        "cached": False
-    }
-
-    # Only cache valid response
-    set_cached_response(key, response)
-
-    return jsonify(response)
+    return jsonify({
+        "result": result["data"],
+        "is_fallback": result["is_fallback"],
+        "response_time": round(time.time() - start_time, 2)
+    })

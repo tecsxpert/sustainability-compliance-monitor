@@ -1,17 +1,16 @@
 from groq import Groq
-import os
 from dotenv import load_dotenv
+from pathlib import Path
+import os
 
-load_dotenv()
-
-print("🔑 API KEY:", os.getenv("GROQ_API_KEY"))
+BASE_DIR = Path(__file__).resolve().parent
+load_dotenv(BASE_DIR / ".env")
 
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
-response = client.chat.completions.create(
-    model="llama-3.3-70b-versatile",
-    messages=[{"role": "user", "content": "Hello"}]
+r = client.chat.completions.create(
+    model="llama3-8b-8192",
+    messages=[{"role": "user", "content": "Say hello"}],
 )
 
-print("AI RESPONSE:")
-print(response.choices[0].message.content)
+print(r.choices[0].message.content)

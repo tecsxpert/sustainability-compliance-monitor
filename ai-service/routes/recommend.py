@@ -1,42 +1,31 @@
 from flask import Blueprint, request, jsonify
+import time
 from services.groq_client import call_groq
-from services.cache import generate_key, get_cached_response, set_cached_response
+from services.fallback import fallback_recommend
+from config import RECOMMEND_PROMPT
 
 recommend_bp = Blueprint('recommend', __name__)
 
-@recommend_bp.route('/recommend', methods=['POST'])
+@recommend_bp.route("/recommend", methods=["POST"])
 def recommend():
+    start_time = time.time()
+
     data = request.json
-    input_text = data.get("input_text")
 
-    if not input_text:
-        return jsonify({"error": "input_text required"}), 400
+    if not data or "text" not in data:
+        return jsonify({"error": "Invalid input"}), 400
 
-    # Unique key
-    key = generate_key("recommend:" + input_text)
+    messages = [
+        {"role": "system", "content": RECOMMEND_PROMPT},
+        {"role": "user", "content": data["text"]}
+    ]
 
-    # Check cache
-    cached = get_cached_response(key)
-    if cached:
-        cached["cached"] = True
-        return jsonify(cached)
+    result = call_groq(messages, fallback_recommend)
 
-    # Call AI
-    result = call_groq(f"Give 3 sustainability recommendations for: {input_text}")
+    response_time = round(time.time() - start_time, 2)
 
-    # DO NOT cache fallback
-    if isinstance(result, dict) and result.get("is_fallback"):
-        return jsonify({
-            "recommendations": result,
-            "cached": False
-        })
-
-    response = {
-        "recommendations": result,
-        "cached": False
-    }
-
-    # Store valid response
-    set_cached_response(key, response)
-
-    return jsonify(response)
+    return jsonify({
+        "recommendations": result["data"],
+        "is_fallback": result["is_fallback"],
+        "response_time": response_time
+    })

@@ -1,55 +1,54 @@
 import os
-import time
-import traceback
-from groq import Groq
+from pathlib import Path
 from dotenv import load_dotenv
-from services.metrics import response_times
+from groq import Groq
+import traceback
+import json
 
-# Load environment variables
-load_dotenv()
+# Load .env
+BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env")
 
-# Debug: check API key (remove later)
 api_key = os.getenv("GROQ_API_KEY")
-print("🔑 GROQ API KEY:", api_key)
 
-# Stop early if key missing (VERY IMPORTANT)
+print(" GROQ_API_KEY loaded:", "YES" if api_key else "NO")
+
 if not api_key:
-    raise ValueError("GROQ_API_KEY is not set. Check your .env file.")
+    raise ValueError("GROQ_API_KEY not found")
 
-# Create Groq client
 client = Groq(api_key=api_key)
 
 
-def call_groq(prompt):
+def call_groq(messages, fallback_function):
     try:
-        start = time.time()
-
         response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",   # correct model
-            messages=[
-                {"role": "user", "content": prompt}
-            ],
+            model="llama-3.1-8b-instant",   #  correct model
+            messages=messages,
             temperature=0.3,
-            max_tokens=500
+            max_tokens=300
         )
 
-        end = time.time()
+        raw_output = response.choices[0].message.content
 
-        # Track response time
-        response_time = (end - start) * 1000
-        response_times.append(response_time)
-
-        if len(response_times) > 50:
-            response_times.pop(0)
-
-        return response.choices[0].message.content
-
-    except Exception as e:
-        import traceback
-        print("GROQ ERROR:")
-        traceback.print_exc()  
+        #  Try parsing JSON safely
+        try:
+            parsed_output = json.loads(raw_output)
+        except Exception:
+            parsed_output = {
+                "raw_text": raw_output
+            }
 
         return {
-            "error": "AI temporarily unavailable",
+            "data": parsed_output,
+            "is_fallback": False
+        }
+
+    except Exception as e:
+        print("\n GROQ ERROR START ")
+        traceback.print_exc()
+        print(" GROQ ERROR END \n")
+
+        return {
+            "data": fallback_function(),
             "is_fallback": True
         }
