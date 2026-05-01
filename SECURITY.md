@@ -56,3 +56,24 @@ I have performed a **comprehensive security audit** on all endpoints (`/api/anal
 - **Details**: 
     - Confirmed `429 Too Many Requests` returns correctly when rate limits are hit.
 
+## Week 2 Security Sign-Off (Day 9)
+
+**Status:** APPROVED ✅
+
+I have conducted the final Week 2 security verification for the Sustainability Compliance Monitor. All required security controls are operational and verified.
+
+### 1. JWT Authentication Verification
+- **Status:** Verified
+- **Details:** The Spring Boot backend successfully validates JWT tokens. Unauthorized requests without a valid Bearer token are correctly rejected with a `401 Unauthorized` response.
+
+### 2. Rate Limiting Integrity
+- **Status:** Verified
+- **Details:** Flask-Limiter is actively enforcing limits on the `/api/analyze` and `/generate-report` endpoints, mitigating potential Denial of Service (DoS) attacks and API quota exhaustion.
+
+### 3. Prompt Injection Resilience
+- **Status:** Verified
+- **Details:** The dual-layer defense (regex pattern blocking + structured system prompts) consistently rejects adversarial inputs attempting to override the AI's persona or logic.
+
+### 4. PII & Sensitive Data Audit
+- **Status:** Verified
+- **Details:** A comprehensive review of the AI interaction flow confirms that no Personally Identifiable Information (PII) is inadvertently logged, cached, or included in outgoing prompts to the Groq API. The prompt structure is entirely focused on generic compliance pillars without exposing user data.
