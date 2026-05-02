@@ -22,6 +22,7 @@ export default function EditPage() {
       setForm(res.data);
     } catch (err) {
       console.error("Error loading record:", err);
+      alert("Failed to load record");
     }
   };
 
@@ -33,12 +34,35 @@ export default function EditPage() {
   };
 
   const handleUpdate = async () => {
+    // ✅ validation
+    if (!form.companyName || !form.status) {
+      alert("Company and status required");
+      return;
+    }
+
+    if (form.complianceScore !== "" && isNaN(form.complianceScore)) {
+      alert("Score must be a number");
+      return;
+    }
+
+    if (form.complianceScore < 0 || form.complianceScore > 100) {
+      alert("Score must be between 0 and 100");
+      return;
+    }
+
     try {
-      await API.put(`/api/${id}`, form);
+      await API.put(`/api/${id}`, {
+        ...form,
+        complianceScore: form.complianceScore
+          ? Number(form.complianceScore)
+          : null,
+      });
+
       alert("Updated successfully");
       window.location.href = "/list";
     } catch (err) {
       console.error("Update failed:", err);
+      alert("Update failed");
     }
   };
 
@@ -50,28 +74,32 @@ export default function EditPage() {
         name="companyName"
         value={form.companyName}
         onChange={handleChange}
-        className="border p-2 mb-2 block"
+        className="border p-2 mb-2 block w-full"
       />
 
       <input
         name="complianceScore"
         value={form.complianceScore}
         onChange={handleChange}
-        className="border p-2 mb-2 block"
+        className="border p-2 mb-2 block w-full"
       />
 
-      <input
+      <select
         name="status"
         value={form.status}
         onChange={handleChange}
-        className="border p-2 mb-2 block"
-      />
+        className="border p-2 mb-2 block w-full"
+      >
+        <option value="">Select Status</option>
+        <option value="COMPLIANT">Compliant</option>
+        <option value="NON-COMPLIANT">Non-Compliant</option>
+      </select>
 
       <textarea
         name="description"
         value={form.description}
         onChange={handleChange}
-        className="border p-2 mb-2 block"
+        className="border p-2 mb-2 block w-full"
       />
 
       <button
