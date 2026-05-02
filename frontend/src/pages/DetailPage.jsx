@@ -8,7 +8,7 @@ function DetailPage() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const [aiData, setAiData] = useState(null);
+  const [aiData, setAiData] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
 
   // Fetch record
@@ -31,7 +31,9 @@ function DetailPage() {
         description: data.description,
       });
 
-      setAiData(res.data);
+      // ✅ FIX: store string instead of array
+      setAiData(res.data.insight);
+
     } catch (err) {
       console.error(err);
       alert("AI failed");
@@ -65,15 +67,8 @@ function DetailPage() {
       {/* RESULT */}
       {aiData && (
         <div className="mt-4 border p-4 bg-gray-100">
-          <h2 className="font-bold">AI Recommendations</h2>
-
-          {aiData.map((item, index) => (
-            <div key={index} className="mb-2">
-              <p><b>Type:</b> {item.action_type}</p>
-              <p>{item.description}</p>
-              <p><b>Priority:</b> {item.priority}</p>
-            </div>
-          ))}
+          <h2 className="font-bold">AI Recommendation</h2>
+          <p>{aiData}</p>
         </div>
       )}
     </div>
