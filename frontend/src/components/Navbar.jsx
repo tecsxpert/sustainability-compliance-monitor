@@ -8,6 +8,7 @@ export default function Navbar() {
         <Link to="/dashboard">Dashboard</Link>
         <Link to="/list">Records</Link>
         <Link to="/add">Add</Link>
+        <Link to="/analytics">Analytics</Link>
       </div>
 
       <button

@@ -10,11 +10,20 @@ import java.util.Map;
 public class AiController {
 
     @PostMapping("/recommend")
-    public Map<String, String> recommend(@RequestBody Map<String, Object> request) {
+public Map<String, String> recommend(@RequestBody Map<String, String> request) {
 
-        return Map.of(
-                "insight",
-                "AI Insight: This company shows moderate compliance. Improve environmental and governance practices."
-        );
+    String desc = request.get("description");
+
+    String insight;
+
+    if (desc != null && desc.toLowerCase().contains("pollution")) {
+        insight = "Reduce emissions and adopt cleaner processes.";
+    } else if (desc != null && desc.toLowerCase().contains("waste")) {
+        insight = "Improve waste management and recycling practices.";
+    } else {
+        insight = "Follow general sustainability best practices.";
     }
+
+    return Map.of("insight", insight);
+}
 }
