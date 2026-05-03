@@ -3,6 +3,7 @@ com\internship\tool\controller\StatsController.class
 com\internship\tool\config\CorsConfig.class
 com\internship\tool\config\SecurityConfig.class
 com\internship\tool\config\JwtFilter.class
+com\internship\tool\config\SwaggerConfig.class
 com\internship\tool\entity\ComplianceRecord.class
 com\internship\tool\service\AuditService.class
 com\internship\tool\controller\AiController.class
