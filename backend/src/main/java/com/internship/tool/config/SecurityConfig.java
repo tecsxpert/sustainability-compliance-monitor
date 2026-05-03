@@ -33,10 +33,10 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
                 
-                // 🔥 ADD THIS LINE (IMPORTANT)
                 .requestMatchers("/api/ai/**").permitAll()
-
+                .requestMatchers("/api/export").permitAll() 
                 .requestMatchers("/api/**").authenticated()
+                .requestMatchers("/api/upload").permitAll() 
                 .anyRequest().permitAll()
             )
 

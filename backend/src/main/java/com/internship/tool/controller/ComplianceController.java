@@ -2,10 +2,15 @@ package com.internship.tool.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.internship.tool.entity.ComplianceRecord;
 import com.internship.tool.repository.ComplianceRepository;
 import com.internship.tool.service.AuditService;
+import org.springframework.web.multipart.MultipartFile;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 import java.util.List;
 
@@ -26,7 +31,31 @@ public class ComplianceController {
         return repository.findAll();
     }
 
-    // 🔹 GET BY ID (🔥 THIS FIXES YOUR ISSUE)
+    @GetMapping("/export")
+public void exportCSV(HttpServletResponse response) throws IOException {
+
+    response.setContentType("text/csv");
+    response.setHeader("Content-Disposition", "attachment; filename=records.csv");
+
+    List<ComplianceRecord> list = repository.findAll();
+
+    PrintWriter writer = response.getWriter();
+
+    writer.println("ID,Company,Score,Status,Description");
+
+    for (ComplianceRecord r : list) {
+        writer.println(
+                r.getId() + "," +
+                r.getCompanyName() + "," +
+                r.getComplianceScore() + "," +
+                r.getStatus() + "," +
+                r.getDescription()
+        );
+    }
+
+    writer.flush();
+}
+
     @GetMapping("/{id}")
     public ComplianceRecord getById(@PathVariable Long id) {
         return repository.findById(id)
@@ -43,6 +72,14 @@ public class ComplianceController {
 
         return saved;
     }
+
+    @PostMapping(value = "/upload", consumes = "multipart/form-data")
+public String uploadFile(@RequestParam("file") MultipartFile file) {
+
+    System.out.println("UPLOAD API HIT");  // 👈 ADD THIS
+
+    return "File uploaded successfully";
+}
 
     // 🔹 UPDATE
     @PutMapping("/{id}")

@@ -12,10 +12,6 @@ export default function EditPage() {
     description: ""
   });
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
   const fetchData = async () => {
     try {
       const res = await API.get(`/api/${id}`);
@@ -25,6 +21,12 @@ export default function EditPage() {
       alert("Failed to load record");
     }
   };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  
 
   const handleChange = (e) => {
     setForm({

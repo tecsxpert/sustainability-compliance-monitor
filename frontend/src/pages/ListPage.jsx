@@ -7,10 +7,6 @@ export default function ListPage() {
   const [actionLoading, setActionLoading] = useState(false);
   const [query, setQuery] = useState("");
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
   const fetchData = async () => {
     try {
       const res = await API.get("/api/all");
@@ -22,6 +18,12 @@ export default function ListPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  
 
   const handleSearch = async () => {
     try {

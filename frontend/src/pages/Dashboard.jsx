@@ -5,11 +5,7 @@ function Dashboard() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchStats();
-  }, []);
-
-  const fetchStats = async () => {
+    const fetchStats = async () => {
     try {
       const res = await API.get("/api/stats"); // ✅ FIXED
       setStats(res.data);
@@ -19,6 +15,11 @@ function Dashboard() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
 
   if (loading) {
     return <p className="p-6">Loading...</p>;
