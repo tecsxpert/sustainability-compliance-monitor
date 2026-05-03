@@ -1,1 +1,4 @@
+com\internship\tool\repository\UserRepository.class
+com\internship\tool\model\User.class
+com\internship\tool\controller\UserController.class
 com\internship\tool\ToolApplication.class
